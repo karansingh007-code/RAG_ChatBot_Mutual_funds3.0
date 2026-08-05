@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Groww Mutual Fund FAQ Chatbot (Facts-Only)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: rgba(22, 31, 49, 0.75);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --accent-green: #00d09c;
+            --accent-green-hover: #00b386;
+            --accent-blue: #5367ff;
+            --text-primary: #ffffff;
+            --text-secondary: #9aa4bf;
+            --user-bubble: #1e293b;
+            --bot-bubble: #152238;
+            --warning-bg: rgba(234, 179, 8, 0.15);
+            --warning-border: rgba(234, 179, 8, 0.4);
+            --warning-text: #fde047;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(0, 208, 156, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(83, 103, 255, 0.08) 0%, transparent 40%);
+        }
+
+        .chat-container {
+            width: 100%;
+            max-width: 800px;
+            height: 90vh;
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+
+        .chat-header {
+            padding: 20px 24px;
+            background: rgba(15, 23, 42, 0.8);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-title-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(135deg, var(--accent-green), var(--accent-blue));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+            color: #000;
+        }
+
+        .header-title h1 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .header-subtitle {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .badge-facts {
+            background: rgba(0, 208, 156, 0.15);
+            color: var(--accent-green);
+            border: 1px solid rgba(0, 208, 156, 0.3);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .disclaimer-banner {
+            background: var(--warning-bg);
+            border-bottom: 1px solid var(--warning-border);
+            color: var(--warning-text);
+            padding: 10px 24px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .messages-area {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .message {
+            display: flex;
+            flex-direction: column;
+            max-width: 82%;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user {
+            align-self: flex-end;
+        }
+
+        .message.bot {
+            align-self: flex-start;
+        }
+
+        .bubble {
+            padding: 14px 18px;
+            border-radius: 16px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .message.user .bubble {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: #ffffff;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.bot .bubble {
+            background: var(--bot-bubble);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-bottom-left-radius: 4px;
+        }
+
+        .citation-box {
+            margin-top: 10px;
+            padding: 8px 12px;
+            background: rgba(0, 208, 156, 0.08);
+            border: 1px solid rgba(0, 208, 156, 0.2);
+            border-radius: 8px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .citation-link {
+            color: var(--accent-green);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .citation-link:hover {
+            text-decoration: underline;
+        }
+
+        .timestamp-tag {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .example-queries-box {
+            padding: 12px 24px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            border-top: 1px solid var(--border-color);
+            background: rgba(15, 23, 42, 0.4);
+        }
+
+        .example-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .example-btn:hover {
+            background: rgba(0, 208, 156, 0.15);
+            color: var(--accent-green);
+            border-color: rgba(0, 208, 156, 0.4);
+        }
+
+        .input-area {
+            padding: 16px 24px;
+            background: rgba(15, 23, 42, 0.9);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 12px;
+        }
+
+        .input-area input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: var(--text-primary);
+            font-size: 14px;
+            outline: none;
+            transition: border 0.2s ease;
+        }
+
+        .input-area input:focus {
+            border-color: var(--accent-green);
+        }
+
+        .send-btn {
+            background: var(--accent-green);
+            color: #000;
+            border: none;
+            border-radius: 12px;
+            padding: 0 24px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .send-btn:hover {
+            background: var(--accent-green-hover);
+        }
+    </style>
+</head>
+<body>
+
+<div class="chat-container">
+    <div class="chat-header">
+        <div class="header-title-box">
+            <div class="logo-icon">G</div>
+            <div class="header-title">
+                <h1>Groww Mutual Fund FAQ Assistant</h1>
+                <div class="header-subtitle">Official Sourced Facts across 5 Target Schemes</div>
+            </div>
+        </div>
+        <div class="badge-facts">Facts-Only RAG</div>
+    </div>
+
+    <div class="disclaimer-banner">
+        <span>⚠️ <strong>Notice:</strong> This assistant provides facts-only responses sourced from official scheme web pages. No investment advice, buy/sell recommendations, or performance predictions.</span>
+    </div>
+
+    <div class="messages-area" id="messagesArea">
+        <div class="message bot">
+            <div class="bubble">
+                Hello! I am your facts-only Mutual Fund Assistant. Ask me factual details (expense ratio, exit load, minimum SIP, ELSS lock-in, riskometer, benchmark, statement downloads) for covered HDFC mutual fund schemes.
+            </div>
+        </div>
+    </div>
+
+    <div class="example-queries-box">
+        <button class="example-btn" onclick="sendExample('What is the ELSS lock-in period?')">ELSS Lock-in Period</button>
+        <button class="example-btn" onclick="sendExample('What is the exit load for HDFC Small Cap Fund?')">Exit Load (HDFC Small Cap)</button>
+        <button class="example-btn" onclick="sendExample('How do I download my capital gains statement on Groww?')">Statement Download Guide</button>
+    </div>
+
+    <div class="input-area">
+        <input type="text" id="userInput" placeholder="Ask a factual scheme question..." onkeypress="handleKeyPress(event)" />
+        <button class="send-btn" onclick="sendMessage()">Send</button>
+    </div>
+</div>
+
+<script>
+    const API_URL = '/api/v1/chat';
+
+    function handleKeyPress(e) {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    }
+
+    function sendExample(query) {
+        document.getElementById('userInput').value = query;
+        sendMessage();
+    }
+
+    async function sendMessage() {
+        const input = document.getElementById('userInput');
+        const query = input.value.trim();
+        if (!query) return;
+
+        appendMessage('user', query);
+        input.value = '';
+
+        try {
+            const res = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query: query })
+            });
+
+            const data = await res.json();
+            appendBotMessage(data);
+        } catch (err) {
+            appendMessage('bot', 'Network error. Please try again.');
+        }
+    }
+
+    function appendMessage(sender, text) {
+        const area = document.getElementById('messagesArea');
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `message ${sender}`;
+        msgDiv.innerHTML = `<div class="bubble">${escapeHtml(text)}</div>`;
+        area.appendChild(msgDiv);
+        area.scrollTop = area.scrollHeight;
+    }
+
+    function appendBotMessage(data) {
+        const area = document.getElementById('messagesArea');
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'message bot';
+
+        let html = `<div class="bubble">${escapeHtml(data.answer)}</div>`;
+
+        if (data.citation) {
+            html += `
+                <div class="citation-box">
+                    <span>📌 Source: <strong>${escapeHtml(data.citation.title)}</strong></span>
+                    <a class="citation-link" href="${escapeHtml(data.citation.url)}" target="_blank">View Source 🔗</a>
+                </div>
+            `;
+        }
+
+        if (data.last_updated) {
+            html += `<div class="timestamp-tag">Last updated from sources: ${escapeHtml(data.last_updated)}</div>`;
+        }
+
+        msgDiv.innerHTML = html;
+        area.appendChild(msgDiv);
+        area.scrollTop = area.scrollHeight;
+    }
+
+    function escapeHtml(text) {
+        if (!text) return '';
+        return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+</script>
+
+</body>
+</html>
